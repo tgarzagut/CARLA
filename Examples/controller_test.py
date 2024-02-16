@@ -400,32 +400,40 @@ class KeyboardControl(object):
             if event.type == pygame.QUIT:
                 return True
 
-            steer_increment = 0.095
+            steer_increment = 0.01
             if event.type == pygame.JOYAXISMOTION:
-                #if event.axis == 0:
-                self._steer_cache = max(-1, min(1, event.value * 1))
+                #we can get the value of each axis through .get_axis()
+                #.get_axis(0) == wheel
+                #.get_axis(1) == throttle
+                #.get_axis(2) == brake
+                #.get_axis(3) == gear change
+
+                #steering
+                self._steer_cache = max(-1, min(1, event.get_axis(0) * 1))
                 self._control.steer = self._steer_cache
-                #elif event.axis == 1:
-                    # Handle throttle input
-                normalized_throttle = (1 - event.value) / 2
+
+                #throttle
+                normalized_throttle = (1 - event.get_axis(1)) / 2
                 throttle_increment = 0.05 * clock.get_time()  # Adjust this multiplier as needed
                 
                 if normalized_throttle > 0:
                     self._control.throttle = min(self._control.throttle + throttle_increment, normalized_throttle)
                 else:
                     self._control.throttle = max(self._control.throttle - (throttle_increment - 0.05), normalized_throttle)
-                    
-                if event.axis == 3 and event.value < 1.0:
+                
+                #break
+                if event.get_axis(2) < 1:
+                    self._control.brake = min(self._control.brake + 0.2, 1)
+                else:
+                    self._control.brake = 0
+
+                #gear change to reverse
+                if event.get_axis(3) < 1:
                     if not self._gear_changed:
                         self._control.gear = 1 if self._control.reverse else -1
                         self._gear_changed = True
                 else:
                     self._gear_changed = False
-
-                if event.axis == 2 and event.value < 1.0:
-                    self._control.brake = min(self._control.brake + 0.2, 1)
-                else:
-                    self._control.brake = 0
 
 
 
