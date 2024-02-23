@@ -1,4 +1,3 @@
-#from logidrivepy
 
 import sys
 sys.path.append('../logidrivepy')
