@@ -405,11 +405,16 @@ class KeyboardControl(object):
 
             steer_increment = 0.01
             if event.type == pygame.JOYAXISMOTION:
-                #if event.axis == 0:
+                #we can get the value of each axis through .get_axis()
+                #.get_axis(0) == wheel
+                #.get_axis(1) == throttle
+                #.get_axis(2) == brake
+                #.get_axis(3) == gear change
+
+                
                 self._steer_cache = max(-1, min(1, joystick.get_axis(0) * 1))
                 self._control.steer = self._steer_cache
-                #elif event.axis == 1:
-                    # Handle throttle input
+                # Handle throttle input
                 normalized_throttle = (1 - joystick.get_axis(1)) / 2
                 throttle_increment = 0.05 * clock.get_time()  # Adjust this multiplier as needed
                 
@@ -418,7 +423,7 @@ class KeyboardControl(object):
                 else:
                     self._control.throttle = max(self._control.throttle - (throttle_increment - 0.05), normalized_throttle)
                 
-                """NT: new code (untested)
+                """ NTESTS: new code (untested)
                     1. figure out what button id is left button behind steering wheel
                     2. use test (i havent added it to github oops) controller_outside_test.py to find out button id"""
                 
@@ -429,8 +434,6 @@ class KeyboardControl(object):
                 else:
                     self._gear_changed = False
                     
-                # if event.key == K_q:
-                #     self._control.gear = 1 if self._control.reverse else -1
                 # if event.axis == 3 and event.value < 1.0:
                 #     if not self._gear_changed:
                 #         self._control.gear = 1 if self._control.reverse else -1
@@ -444,7 +447,8 @@ class KeyboardControl(object):
                     self._control.brake = 0
 
 
-            #NT: next test try running without this elif and inside the, I believe it will allow for both keyboard and joystick to work at the same time (under the condition that joystick is used first).
+                """ NTESTS: next test try running without this elif and inside the, I believe it will allow for both keyboard and joystick to work 
+                at the same time (under the condition that joystick is used first)."""
             elif event.type == pygame.KEYUP:
                 if self._is_quit_shortcut(event.key):
                     return True
