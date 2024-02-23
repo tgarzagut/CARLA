@@ -417,13 +417,26 @@ class KeyboardControl(object):
                     self._control.throttle = min(self._control.throttle + throttle_increment, normalized_throttle)
                 else:
                     self._control.throttle = max(self._control.throttle - (throttle_increment - 0.05), normalized_throttle)
-                    
-                if event.axis == 3 and event.value < 1.0:
+                
+                """NT: new code (untested)
+                    1. figure out what button id is left button behind steering wheel
+                    2. use test (i havent added it to github oops) controller_outside_test.py to find out button id"""
+                
+                if joystick.get_button("""BUTTON ID HERE""") == True:
                     if not self._gear_changed:
                         self._control.gear = 1 if self._control.reverse else -1
                         self._gear_changed = True
                 else:
                     self._gear_changed = False
+                    
+                # if event.key == K_q:
+                #     self._control.gear = 1 if self._control.reverse else -1
+                # if event.axis == 3 and event.value < 1.0:
+                #     if not self._gear_changed:
+                #         self._control.gear = 1 if self._control.reverse else -1
+                #         self._gear_changed = True
+                # else:
+                #     self._gear_changed = False
 
                 if event.axis == 2 and event.value < 1.0:
                     self._control.brake = min(self._control.brake + 0.2, 1)
@@ -431,7 +444,7 @@ class KeyboardControl(object):
                     self._control.brake = 0
 
 
-
+            #NT: next test try running without this elif and inside the, I believe it will allow for both keyboard and joystick to work at the same time (under the condition that joystick is used first).
             elif event.type == pygame.KEYUP:
                 if self._is_quit_shortcut(event.key):
                     return True
