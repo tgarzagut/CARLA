@@ -1,11 +1,11 @@
 # CARLA
-Working on manual control with logitech G920
+Collection of tests and files for working on manual control with logitech G920
 
 ### So far
 - No longer using Logidrivepy for Logitech controllers
     - Logidrivepy is a better approach for mirroring autonomous driving in the controls
 - Fully working steer and throttle, break and gear work but could use work on the realism
-
+- Used pygame to integrate the controls
 
 ### To-Do
 - Fix up brakes to be less sensitive
@@ -27,4 +27,8 @@ Working on manual control with logitech G920
     - PROBLEMS: only registers one axis at a time aka cant steer and throttle at the same time
 
 #### Tests
-
+- wheel_test.py
+    - LOGIDRIVEPY: tests wheel spin and limits
+- controller_outside_test.py
+    - PYGAME: tests each axis and button in the Logitech setup
+    - 
