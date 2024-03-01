@@ -8,6 +8,8 @@ Collection of tests and files for working on manual control with logitech G920
 - Used pygame to integrate the controls
 
 ### To-Do
+- In triple monitor, see why throttle starts without axis value ??
+- in triple monitor, add brakes and gear change.
 - Fix up brakes to be less sensitive
 - Update gear change to a button instead (previously using a pedal)
     - using our third pedal is not very intuitive for the driver, testers strugle using three pedals
@@ -25,6 +27,8 @@ Collection of tests and files for working on manual control with logitech G920
 - control_test_2.py (Failed atttempt)
     - (working) inside our event loop we have if statements that determine what axis is being used
     - PROBLEMS: only registers one axis at a time aka cant steer and throttle at the same time
+- triple_hc_trial_run.py (kinda works so far!)
+    - manual control with triple camera using pygame joystick
 
 #### Tests
 - wheel_test.py
