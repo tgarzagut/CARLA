@@ -235,11 +235,14 @@ class BasicSynchronousClient(object):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return True 
-                normalized_throttle = max(0.0, (1 - self._joystick.get_axis(1)) / 2)
-                _brake = (1 - self._joystick.get_axis(1))
-                control.throttle = min(0, normalized_throttle - _brake)
+                normalized_throttle = (1 - self._joystick.get_axis(1)) / 2
 
-                control.reverse = self._joystick.get_button(5)
+                # if self._joystick.get_axis(2) < 1:
+                #     control.reverse = True
+
+                control.throttle = normalized_throttle
+
+                control.reverse = self._joystick.get_button(5) or self._joystick.get_axis(2) < 0.99
 
                 steer_axis_value = self._joystick.get_axis(0)  # X-axis
                 control.steer = steer_axis_value
