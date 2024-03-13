@@ -228,35 +228,24 @@ class BasicSynchronousClient(object):
             pygame.joystick.init()
             self._joystick = pygame.joystick.Joystick(0)
             self._joystick.init()
-
         def control(self):
             clock = pygame.time.Clock()
             control = carla.VehicleControl(throttle=0.0, steer=0.0, brake=0.0, hand_brake=False, reverse=False)
             """Applies control to main car based on joystick input."""
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return True
+                    return True 
+                normalized_throttle = max(0.0, (1 - self._joystick.get_axis(1)) / 2)
+                _brake = (1 - self._joystick.get_axis(1))
+                control.throttle = min(0, normalized_throttle - _brake)
 
-            # Get joystick input
-            
-                # print(self._joystick.get_axis(0))
-                # Get joystick axes values
-                # _steer = self._joystick.get_axis(0)  # X-axis
-                # _throttle = (1+ self._joystick.get_axis(1))/2  # Y-axis inverted for throttle
-                # _brake = (1+self._joystick.get_axis(2))/2  # Brake
-                # Apply control to the car
-
-                normalized_throttle = (1 - self._joystick.get_axis(1)) / 2
-                control.throttle = max(0.0, normalized_throttle)
+                control.reverse = self._joystick.get_button(5)
 
                 steer_axis_value = self._joystick.get_axis(0)  # X-axis
                 control.steer = steer_axis_value
 
-
-
-                # control.steer = _steer
-                # control.throttle = max(0, _throttle)
-                # control.brake = max(0, _brake)
+                
+                
                 # control.reverse = _throttle < 0  # Set reverse if throttle is negative
 
                 self._world.car.apply_control(control)
@@ -303,7 +292,7 @@ class BasicSynchronousClient(object):
 
         if self.image is not None:
             array = np.frombuffer(self.image.raw_data, dtype=np.dtype("uint8"))
-            array = np.reshape(array, (self.image.height, self.image.width, 4))
+            array = np.reshape(array, (VIEW_HEIGHT, VIEW_WIDTH, 4))
             array = array[:, :, :3]
             array = array[:, :, ::-1]
             surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
@@ -362,13 +351,15 @@ class BasicSynchronousClient(object):
             self.world = self.client.get_world()
 
             self.setup_car()
-            self.setup_camera()
+            
             self.setup_right_camera()
             self.setup_left_camera()
+            self.setup_camera()
 
-            self.display = pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_h), pygame.SCALED)
+            # self.display = pygame.display.set_mode((VIEW_WIDTH, VIEW_HEIGHT), pygame.SCALED)
             self.right_display = cv2.namedWindow('right_image')
             self.left_display = cv2.namedWindow("left_image")
+            self.display = pygame.display.set_mode((VIEW_WIDTH, VIEW_HEIGHT), pygame.SCALED)
 
             pygame_clock = pygame.time.Clock()
 
@@ -382,13 +373,15 @@ class BasicSynchronousClient(object):
                 self.right_capture = True
                 self.left_capture = True
                 pygame_clock.tick_busy_loop(30)
-                self.render(self.display)
+                # self.render(self.display)
                 pygame.display.flip()
                 pygame.event.pump()
                 self.right_render(self.right_display)
                 # pygame.display.flip()
                 # pygame.event.pump()
                 self.left_render(self.left_display)
+                self.render(self.display)
+
                 self.log_data()
                 cv2.waitKey(1)
                 if joystick_control.control():  # Apply joystick control
