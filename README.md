@@ -11,11 +11,8 @@ Collection of tests and files for working on manual control with logitech G920
 - In triple monitor, see why throttle starts without axis value ??
 - in triple monitor, add brakes and gear change.
 - Fix up brakes to be less sensitive
-- Update gear change to a button instead (previously using a pedal)
-    - using our third pedal is not very intuitive for the driver, testers strugle using three pedals
-- Include manual brake and additional controls.
-- Integrate these controls onto our autonomous vehicle so a driver can take over
-    - I'm thinking of using a button to switch from manual to autonomous
+- Include manual brake and additional controls to manual control.
+- Use button to switch between manual and autonomous
 
 ### File Descriptions
 #### Examples
