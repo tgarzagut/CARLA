@@ -1,5 +1,5 @@
 # CARLA
-Collection of tests and files for working on manual control with logitech G920
+Collection of tests and files for working with CARLA Simulator using logitech G920 controller
 
 ### Comments
 - No longer using Logidrivepy for Logitech controllers
