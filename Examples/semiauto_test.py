@@ -70,21 +70,9 @@ from agents.navigation.basic_agent import BasicAgent  # pylint: disable=import-e
 # from agents.navigation.basic_agent import BasicAgent  # pylint: disable=import-error
 #from carla.agents.navigation.behavior_agent import BehavoirAgent
 
-pygame.init()
-# Initialize joystick subsystem
-pygame.joystick.init()
-
-# Check how many joysticks are connected
-joystick_count = pygame.joystick.get_count()
-print("Number of joysticks:", joystick_count)
-
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
-
 # ==============================================================================
 # -- Global functions ----------------------------------------------------------
 # ==============================================================================
-
 walkers_list = []
 all_id = []
 all_actors = []
@@ -343,6 +331,7 @@ class World(object):
             spawn_point.location.z += 2.0
             spawn_point.rotation.roll = 0.0
             spawn_point.rotation.pitch = 0.0
+            self.player.set_autopilot(False)
 
             # spawn_point = self.map.get_waypoint(carla.Location(x=0, y=30, z=10))
             spawn_point = self.map.get_waypoint(carla.Location(x=-86.347275, y=24.404694, z=1.0))
@@ -407,12 +396,12 @@ class World(object):
         self.tm.global_percentage_speed_difference(10.0)
         tm_port = self.tm.get_port()
         for v in vehicle_list:
-            v.set_autopilot(True, tm_port)
+            v.set_autopilot(False, tm_port)
             self.tm.ignore_lights_percentage(v, 0)
             # self.tm.ignore_stop_signs(False)
             self.tm.distance_to_leading_vehicle(v, 0.8)
             self.tm.vehicle_percentage_speed_difference(v, -15)
-            self.tm.set_synchronous_mode(True)
+            self.tm.set_synchronous_mode(False)
 
     def modify_vehicle_physics(self, actor):
         #If actor is not a vehicle, we cannot use the physics control
@@ -499,12 +488,12 @@ class World(object):
         self.tm.global_percentage_speed_difference(10.0)
         tm_port = self.tm.get_port()
         for v in vehicle_list:
-            v.set_autopilot(True, tm_port)
+            v.set_autopilot(False, tm_port)
             self.tm.ignore_lights_percentage(v, 0)
             self.tm.distance_to_leading_vehicle(v, 0.8)
             # self.tm.ignore_stop_signs(False)
             self.tm.vehicle_percentage_speed_difference(v, -15)
-            self.tm.set_synchronous_mode(True)
+            self.tm.set_synchronous_mode(False)
         print(f"A total of {len(vehicle_list)} vehicles were spawned around ego vehicle.")     
 
     def spawn_agro_vehicles(self):
@@ -531,12 +520,12 @@ class World(object):
         self.tm3.global_percentage_speed_difference(10.0)
         tm_port = self.tm3.get_port()
         for v in vehicle_list:
-            v.set_autopilot(True, tm_port)
+            v.set_autopilot(False, tm_port)
             self.tm3.ignore_lights_percentage(v, 100)
             self.tm3.distance_to_leading_vehicle(v, 1)
             self.tm3.vehicle_percentage_speed_difference(v, -20)
             self.tm3.update_vehicle_lights(v, True)
-            self.tm3.set_synchronous_mode(True)
+            self.tm3.set_synchronous_mode(False)
         print(f"Successfuly spawned {len(vehicle_list)} aggressive vehicles.")
                 
     def spawn_cautious_vehicles(self):
@@ -587,12 +576,12 @@ class World(object):
         self.tm3.global_percentage_speed_difference(10.0)
         tm_port = self.tm3.get_port()
         for v in vehicle_list:
-            v.set_autopilot(True, tm_port)
+            v.set_autopilot(False, tm_port)
             self.tm2.distance_to_leading_vehicle(v, 10.0)
             self.tm2.vehicle_percentage_speed_difference(v, 60)
             self.tm2.update_vehicle_lights(v, True)
             self.tm2.auto_lane_change(v, False)
-            self.tm2.set_synchronous_mode(True)
+            self.tm2.set_synchronous_mode(False)
         print(f"Successfuly spawned {len(vehicle_list)} cautious vehicles.")
 
     def spawn_bikes(self):
@@ -640,11 +629,11 @@ class World(object):
         self.tm.global_percentage_speed_difference(10.0)
         tm_port = self.tm3.get_port()
         for v in vehicle_list:
-            v.set_autopilot(True, tm_port)
+            v.set_autopilot(False, tm_port)
             self.tm.ignore_lights_percentage(v, 0)
             self.tm.distance_to_leading_vehicle(v, 0.8)
             self.tm.vehicle_percentage_speed_difference(v, -15)
-            self.tm.set_synchronous_mode(True)
+            self.tm.set_synchronous_mode(False)
 
     # ======= camera functions =======
     def camera_blueprint(self):
@@ -793,37 +782,6 @@ class KeyboardControl(object):
             raise NotImplementedError("Actor type not supported")
         self._steer_cache = 0.0
 
-        self.controller = None  # Initialize joystick controller
-            
-        # Initialize Pygame and joysticks
-        pygame.init()
-        pygame.joystick.init()
-
-        if pygame.joystick.get_count() > 0:
-            # Assuming you want to use the first joystick
-            self.controller = pygame.joystick.Joystick(0)
-            self.controller.init()
-    def control(self):
-        clock = pygame.time.Clock()
-        control = carla.VehicleControl(throttle=0.0, steer=0.0, brake=0.0, hand_brake=False, reverse=False)
-        """Applies control to main car based on joystick input."""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return True 
-            normalized_throttle = (1 - self._joystick.get_axis(1)) / 2
-
-
-            control.throttle = normalized_throttle
-
-            control.reverse = self._joystick.get_button(5) or self._joystick.get_axis(2) < 0.99
-
-            steer_axis_value = self._joystick.get_axis(0)  # X-axis
-            control.steer = steer_axis_value
-            if self._joystick.get_button(1):
-                self._world.car.apply_control(agent.run_step())
-            else:
-                self._world.car.apply_control(control)
-
     def parse_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -831,8 +789,7 @@ class KeyboardControl(object):
             if event.type == pygame.KEYUP:
                 if self._is_quit_shortcut(event.key):
                     return True
-                if  self._joystick.get_button(1):
-                    self._world.car.apply_control(control)
+
     @staticmethod
     def _is_quit_shortcut(key):
         """Shortcut for quitting"""
@@ -858,7 +815,7 @@ def game_loop(args):
 
         if args.sync:
             settings = sim_world.get_settings()
-            settings.synchronous_mode = True
+            settings.synchronous_mode = False
             settings.fixed_delta_seconds = 0.05
             sim_world.apply_settings(settings)
 
@@ -918,7 +875,7 @@ def game_loop(args):
         spawn_vehicle_at_spawn = False
 
         static_weather_parameters = get_static_weather() #changed
-
+        semi = False
         ####################################################
         print("\n---- Entering Game Loop ----")
         while True:
@@ -930,7 +887,7 @@ def game_loop(args):
                 world.world.wait_for_tick()
             if controller.parse_events():
                 return
-            controller = KeyboardControl(world)
+            
             # === camera stuff here ====
             world.capture = True
             world.right_capture = True
@@ -1093,8 +1050,14 @@ def game_loop(args):
                     print(f"Target {index + 1} has been reached, sending new target")
                     agent.set_destination(end_location=different_end_destinations[index])
                     index += 1
-            
-            world.player.apply_control(agent.run_step())
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:  # Check if a key is pressed down
+                    if event.key == pygame.K_d:
+                        print("testttttttt")
+                        semi = True
+            if semi == False:
+                world.player.apply_control(agent.run_step())
 
     finally:
 
@@ -1184,7 +1147,6 @@ def main():
     logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
     logging.info('listening to server %s:%s', args.host, args.port)
-
     try:
         game_loop(args)
 
