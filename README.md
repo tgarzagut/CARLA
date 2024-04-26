@@ -9,9 +9,8 @@ Collection of tests and files for working with CARLA Simulator using logitech G9
 
 
 ### To-Do
-- Include manual brake and additional controls to manual control.
-- Use button to switch between manual and autonomous. (bad attempt so far)
 - See if you can switch screen size for middle triple screen.
+- Implement controls for the semiautonomous
 
 ### File Descriptions
 #### Examples
