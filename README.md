@@ -15,6 +15,9 @@ Collection of tests and files for working with CARLA Simulator using logitech G9
 
 ### File Descriptions
 #### Examples
+-miniScenario_1
+    - Implemented correct spawn point, pedestrian spawns too early. Need to change either spawn location or pedestrian spwan point
+    - Need to implement manual control, switch from autonomous to manual already implemented
 - final_run.py (Working attempt)
     - We use .get_axis() from the pygame library to distinguish between the values of the different axis
     - Received feedback from a handful of testers and it looks + feels good!
