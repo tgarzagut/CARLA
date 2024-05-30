@@ -9,12 +9,14 @@ Collection of tests and files for working with CARLA Simulator using logitech G9
 
 
 ### To-Do
-- Include manual brake and additional controls to manual control.
-- Use button to switch between manual and autonomous. (bad attempt so far)
 - See if you can switch screen size for middle triple screen.
+- Implement controls for the semiautonomous
 
 ### File Descriptions
 #### Examples
+- miniScenario_1
+    - Implemented correct spawn point, pedestrian spawns too early. Need to change either spawn location or pedestrian spwan point
+    - Need to implement manual control, switch from autonomous to manual already implemented
 - final_run.py (Working attempt)
     - We use .get_axis() from the pygame library to distinguish between the values of the different axis
     - Received feedback from a handful of testers and it looks + feels good!

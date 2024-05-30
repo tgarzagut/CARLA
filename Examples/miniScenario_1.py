@@ -92,7 +92,7 @@ def find_weather_presets():
 
 def set_destinations(spawn_points):
         different_end_destinations = []
-        #0
+        # #0
         end_destination = random.choice(spawn_points).location
         end_destination.x = 110.800049
         end_destination.y = 72.599747
@@ -144,6 +144,30 @@ def set_destinations(spawn_points):
         end_destination = random.choice(spawn_points).location
         end_destination.x = 87.605782
         end_destination.y = 130.068909
+        different_end_destinations.append(end_destination)
+
+        # 8
+        end_destination = random.choice(spawn_points).location
+        end_destination.x = 212
+        end_destination.y = 326
+        different_end_destinations.append(end_destination)
+
+        # 9
+        end_destination = random.choice(spawn_points).location
+        end_destination.x = 110.632843
+        end_destination.y = -4.862453
+        different_end_destinations.append(end_destination)
+
+        # 10
+        end_destination = random.choice(spawn_points).location
+        end_destination.x = -44.846107
+        end_destination.y = 45.654007
+        different_end_destinations.append(end_destination)
+
+        # 11
+        end_destination = random.choice(spawn_points).location
+        end_destination.x = -69.321930
+        end_destination.y = -58.023651
         different_end_destinations.append(end_destination)
 
         return different_end_destinations
@@ -486,112 +510,6 @@ class World(object):
             self.tm3.set_synchronous_mode(False)
         print(f"Successfuly spawned {len(vehicle_list)} aggressive vehicles.")
                 
-    def spawn_cautious_vehicles(self):
-        """ spawns 8 vehicles close to the ego vehicle """
-        vehicle_list = []
-        accessible_points = [
-            carla.Transform(carla.Location(x=-45.317440, y=-11.645325, z=0.600002), carla.Rotation(pitch=0.000000, yaw=-90.161217, roll=0.000000)),
-            carla.Transform(carla.Location(x=-45.311253, y=-1.694395, z=0.600000), carla.Rotation(pitch=0.000000, yaw=-90.161217, roll=0.000000)),
-            carla.Transform(carla.Location(x=-20.115120, y=16.749100, z=0.600000), carla.Rotation(pitch=0.000000, yaw=-179.840790, roll=0.000000)),
-            carla.Transform(carla.Location(x=-64.581863, y=-65.167366, z=0.600000), carla.Rotation(pitch=0.000000, yaw=-179.403244, roll=0.000000)),
-            carla.Transform(carla.Location(x=-41.833862, y=-16.555164, z=0.600002), carla.Rotation(pitch=0.000000, yaw=-90.161217, roll=0.000000)),
-            carla.Transform(carla.Location(x=-24.336779, y=-57.785625, z=0.600000), carla.Rotation(pitch=0.000000, yaw=0.596735, roll=0.000000)),
-            carla.Transform(carla.Location(x=-48.839951, y=-17.213200, z=0.600000), carla.Rotation(pitch=0.000000, yaw=90.432327, roll=0.000000)),
-            carla.Transform(carla.Location(x=-52.330811, y=-14.039614, z=0.600000), carla.Rotation(pitch=0.000000, yaw=90.432327, roll=0.000000))
-        ]
-
-        bp = self.world.get_blueprint_library()
-        vehicle_bps = [ 
-            bp.filter('vehicle.dodge.charger_police')[0],
-            bp.filter('vehicle.dodge.charger_police_2020')[0],
-            bp.filter('vehicle.dodge.charger_police_2020')[0],
-            bp.filter('vehicle.ford.ambulance')[0],
-            bp.filter('vehicle.mercedes.coupe_2020')[0],
-            bp.filter('vehicle.mercedes.sprinter')[0],
-            bp.filter('vehicle.mini.cooper_s_2021')[0],
-            bp.filter('vehicle.volkswagen.t2')[0]
-        ]
-
-        # orange and white
-        for i,v in enumerate(vehicle_bps[4:], 3):
-            if i % 2:
-                v.set_attribute('color', '255,87,51')
-            else:
-                v.set_attribute('color', '255,255,255')
-
-        numbers_of_vehicles = len(accessible_points)
-        for i in range(numbers_of_vehicles):
-            point = accessible_points[i]
-            vehicle_bp = vehicle_bps[i]
-            try:
-                vehicle = self.world.spawn_actor(vehicle_bp, point)
-                vehicle_list.append(vehicle)
-                vehicles_list.append(vehicle.id)
-            except:
-                print('failed trying to spawn cautious vehicles')
-                print(f"failed vehicle: {vehicle_bp}")
-        
-        self.tm3.global_percentage_speed_difference(10.0)
-        tm_port = self.tm3.get_port()
-        for v in vehicle_list:
-            v.set_autopilot(False, tm_port)
-            self.tm2.distance_to_leading_vehicle(v, 10.0)
-            self.tm2.vehicle_percentage_speed_difference(v, 60)
-            self.tm2.update_vehicle_lights(v, True)
-            self.tm2.auto_lane_change(v, False)
-            self.tm2.set_synchronous_mode(False)
-        print(f"Successfuly spawned {len(vehicle_list)} cautious vehicles.")
-
-    def spawn_bikes(self):
-        vehicle_list = [] #store spawned vehicles to manage with traffic manger(autopilot)
-        accessible_points = [
-            carla.Transform(carla.Location(x=-64.644844, y=24.471010, z=0.600000), carla.Rotation(pitch=0.000000, yaw=0.159198, roll=0.000000)),
-            carla.Transform(carla.Location(x=-67.254570, y=27.963758, z=0.600000), carla.Rotation(pitch=0.000000, yaw=0.159198, roll=0.000000)),
-            carla.Transform(carla.Location(x=-87.623032, y=12.967159, z=0.600000), carla.Rotation(pitch=0.000000, yaw=-179.840790, roll=0.000000))
-        ]
-
-        bp = self.world.get_blueprint_library()
-        vehicle_bps = [
-           bp.filter('vehicle.diamondback.century')[0], # this is a bike
-           bp.filter('vehicle.kawasaki.ninja')[0],
-           bp.filter('vehicle.harley-davidson.low_rider')[0]
-        ]
-
-        #make all normal vehicles around ego vehicle to be black
-        for i, v in enumerate(vehicle_bps):
-            if i % 2:
-                v.set_attribute('color', '0,0,255')
-            else:
-                v.set_attribute('color', "0,0,0")
-
-        numbers_of_vehicles = len(accessible_points)
-        
-        for i in range(0, numbers_of_vehicles):
-            point = accessible_points[i]
-            vehicle_bp = vehicle_bps[i]
-            try:
-                vehicle = self.world.spawn_actor(vehicle_bp, point)
-                vehicle_list.append(vehicle)
-                vehicles_list.append(vehicle.id)
-
-            except Exception as e:
-                print('\n--failed trying to spawn vehicle around ego vehicle--')
-                print(i, vehicle_bp)
-                print(point)
-                print(e)
-                print("\n")
-                pass
-        print(f"Successfully spawned {len(vehicle_list)} bikes!\n")
-
-        #add these vehicles into the traffice manager
-        self.tm.global_percentage_speed_difference(10.0)
-        tm_port = self.tm3.get_port()
-        for v in vehicle_list:
-            v.set_autopilot(False, tm_port)
-            self.tm.ignore_lights_percentage(v, 0)
-            self.tm.distance_to_leading_vehicle(v, 0.8)
-            self.tm.vehicle_percentage_speed_difference(v, -15)
-            self.tm.set_synchronous_mode(False)
 
     # ======= camera functions =======
     def camera_blueprint(self):
@@ -862,49 +780,38 @@ def game_loop(args):
             cv2.waitKey(1)
             # =====================
 
-
             velocity = world.player.get_velocity()
             speed = math.sqrt(velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2) # in m/s
 
             ##### SCENARIOS #####
             loc = world.player.get_location()
-            #1  SPAWN VEHICLES LEFT AND RIGHT OF SPAWNED PLAYER
-            if spawn_vehicle_at_spawn == False:
-                print("\n----Entering the first scenario...----")
-                spawn_vehicle_at_spawn = True
-                world.spawn_vehicles_straight(x=-52.498489, y=-11.581840, color=None, type_car="vehicle.carlamotors.carlacola")
-                world.spawn_vehicles_straight(x=-45, y=63, color="255,0,0", type_car="vehicle.chevrolet.impala")
-                spawn_vehicle_at_spawn = True
-                print("----Exiting the first scenario----\n")
 
-            #2 SPAWN PEDESTRIAN AT CROSSWALK and VEHICLES
+            #1 SPAWN PEDESTRIAN AT CROSSWALK and VEHICLES
             if loc.x < 55 and loc.x > 50 and loc.y < 25 and loc.y > 22 and len(walkers) == 0:
                 print("\n----Entering the second scenario...----")
                 spawn_pedestrians(world=world.world, client=client, type_pedestrian="walker.pedestrian.0018", x=86,y=31)
                 # randTest()
-                world.spawn_vehicles_straight(x=106, y=52, color="255,0,0", type_car="vehicle.jeep.wrangler_rubicon")
-                world.spawn_vehicles_straight(x=99,y=-22, color="255,0,0", type_car="vehicle.lincoln.mkz_2017")
                 print("----Exiting the second scenario----\n")
 
-            #3 SPAWN PEDESTRIAN AT NEXT CROSSWALK AFTER #2
-            if loc.x < 88 and loc.x > 87 and loc.y < 25 and loc.y > 24 and len(walkers) == 1:
-                print("\n----Entering the third scenario...----")
-                spawn_pedestrians(world=world.world, client=client, type_pedestrian="walker.pedestrian.0009", x=111.590347, y=2.08)
+            #XYZ
+            #2 SPAWN WOMAN PEDESTRIAN AT CROSSWALK
+            if loc.x < -95.8 and loc.x > -109 and loc.y < 35 and loc.y > 17 and len(walkers) == 1:
+                print("\n----Entering passed...----")
+                spawn_pedestrians(world=world.world, client=client, type_pedestrian="walker.pedestrian.0007", x=-114, y=35)
                 print("----Exiting the third scenario----\n")
             #####################
 
 
             # END script if time limit reaches (15 min) or it has reached it's last destination
-            if time.time() - oldTime >= (59*3) and time.time() - oldTime < (59*16):
+            if time.time() - oldTime >= (59*5) and time.time() - oldTime < (59*5):
                 print("It has been 5 minutes, scenario ending")
-                print(f"A total of {index}/7 destinations were reached.")
                 break
 
-            if index == 3 and agent.done():
-                print("All  destinations have been reached.")
-                total_time = (time.time() - oldTime) /59
-                print(f"A total of {round(total_time)}/15 minutes have passed.")
-                break
+            # if index == 3 and agent.done():
+            #     print("All  destinations have been reached.")
+            #     total_time = (time.time() - oldTime) /59
+            #     print(f"A total of {round(total_time)}/15 minutes have passed.")
+            #     break
                 # print("index: " + str(index))
                 # print(f"Total time elapsed: {time.time()-oldTime/59}")
 
@@ -922,6 +829,9 @@ def game_loop(args):
                     if event.key == pygame.K_d:
                         print("testttttttt")
                         semi = True
+                    if event.key == pygame.K_l:
+                        location = world.player.get_transform().location
+                        print(f"Location: ({location.x:5.1f}, {location.y:5.1f})")
             if semi == False:
                 world.player.apply_control(agent.run_step())
 
@@ -940,7 +850,9 @@ def game_loop(args):
             """ Memory Management """
             world.destroy_sensors() #destroys cameras
             world.destroy_cars()
-            #world.destroy_pedestrians()
+            world.destroy_pedestrians()
+            total_time = (time.time() - oldTime) /59
+            print(f"A total of {round(total_time)} minutes have passed.")
 
         pygame.quit()
         cv2.destroyAllWindows()
